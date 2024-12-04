@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liyana Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffe6f7;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        /* Title without :3 */
+        .title {
+            font-size: 80px;
+            font-weight: bold;
+            color: #ff66b2;
+        }
+
+        /* Smiley :3 with jump animation */
+        .smiley {
+            font-size: 80px;
+            font-weight: bold;
+            margin-left: 10px;
+            display: inline-block;
+            animation: jump 1s ease-in-out infinite; /* Apply jump animation */
+        }
+
+        /* Jump animation keyframes */
+        @keyframes jump {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px); /* Jump 20px up */
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .description {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #ff66b2;
+        }
+
+        .start-button {
+            background-color: #ff66b2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            margin-top: 30px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .start-button:hover {
+            background-color: #ff3385;
+            transform: scale(1.1); /* Slightly enlarge button on hover */
+        }
+
+        .instructions {
+            font-size: 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            text-decoration: underline;
+            color: #ff66b2;
+        }
+
+        /* Instructions Popup Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            width: 350px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .close-modal-button {
+            background-color: #ff66b2;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            margin-top: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .close-modal-button:hover {
+            background-color: #ff3385;
+        }
+
+        /* Mobile-Friendly Adjustments */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 60px;
+            }
+
+            .smiley {
+                font-size: 60px;
+            }
+
+            .description {
+                font-size: 20px;
+            }
+
+            .start-button {
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+
+            .instructions {
+                font-size: 18px;
+            }
+        }
+
+        /* Further smaller screens */
+        @media (max-width: 480px) {
+            .title {
+                font-size: 50px;
+            }
+
+            .smiley {
+                font-size: 50px;
+            }
+
+            .description {
+                font-size: 18px;
+            }
+
+            .start-button {
+                font-size: 14px;
+                padding: 10px 18px;
+            }
+
+            .instructions {
+                font-size: 16px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="title">
+            Liyana Game <span class="smiley">:3</span>
+        </div>
+        <div class="description">
+            Earn hearts and have fun!
+        </div>
+        <button class="start-button" onclick="startGame()">Start Game</button>
+
+        <div class="instructions" onclick="showInstructions()">How to Play</div>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <h2>How to Play</h2>
+            <p>Click on the hearts to collect them and avoid missing too many!</p>
+            <p>Gifts will appear with a 5% chance, click on them to see a surprise..
+            but im still working on that 😭😭 </p>
+            <button class="close-modal-button" onclick="closeInstructions()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Show instructions popup
+        function showInstructions() {
+            document.getElementById("instructionsModal").style.display = "flex"; // Show the modal
+        }
+
+        // Close instructions popup
+        function closeInstructions() {
+            document.getElementById("instructionsModal").style.display = "none"; // Hide the modal
+        }
+
+        // Start Game (Redirects to the game page)
+        function startGame() {
+            window.location.href = 'main.html'; // This will load the main game page
+        }
+    </script>
+
+</body>
+</html>
