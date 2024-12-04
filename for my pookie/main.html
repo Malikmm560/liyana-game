@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Falling Hearts and Gifts</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffe6f7; /* Soft pink background */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            color: #ff66b2; /* Soft rose color */
+            animation: fall 5s infinite ease-in;
+            cursor: pointer;
+            will-change: transform, opacity; /* Optimize animation performance */
+        }
+
+        .gift {
+            position: absolute;
+            font-size: 30px;
+            animation: fall 4s infinite ease-in;
+            cursor: pointer;
+            will-change: transform, opacity;
+        }
+
+        @keyframes fall {
+            0% {
+                top: -50px; /* Start from above the screen */
+                opacity: 1;
+            }
+            100% {
+                top: 100vh; /* Fall to the bottom of the screen */
+                opacity: 1;
+            }
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Modal Style */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-content img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* Score Display Style */
+        .score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff66b2;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        /* Back Button Style */
+        .back-button {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            background-color: #ff66b2;
+            color: white;
+            font-size: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #ff3399;
+        }
+
+        .back-button:active {
+            background-color: #e60073;
+        }
+
+        /* Shop Button Style */
+        .shop-button {
+            position: absolute;
+            top: 150px;
+            left: 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .shop-button:hover {
+            background-color: #45a049;
+        }
+
+        .shop-button:active {
+            background-color: #388e3c;
+        }
+
+        /* Shop Modal Style */
+        .shop-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shop-modal-content {
+            background-color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .shop-modal button {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .shop-modal button:hover {
+            background-color: #45a049;
+        }
+
+        .shop-modal button:active {
+            background-color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Back Button -->
+    <button class="back-button" onclick="goBack()">Back to Menu</button>
+
+    <!-- Score Display -->
+    <div id="scoreDisplay" class="score">Hearts Collected: 0</div>
+
+    <!-- Shop Button -->
+    <button class="shop-button" onclick="openShop()">Open Shop</button>
+
+    <!-- Shop Modal -->
+    <div id="shopModal" class="shop-modal">
+        <div class="shop-modal-content">
+            <h2>Shop</h2>
+            <button onclick="buySlowFalling()">Slow Hearts (50 Hearts)</button>
+            <button onclick="buyBigHearts()">Big Hearts (10 Hearts)</button>
+            <button onclick="closeShop()">Close</button>
+        </div>
+    </div>
+
+    <!-- Audio Pop Sounds -->
+    <audio id="pop-sound-1" src="pop-sound-1.mp3" preload="auto"></audio>
+    <audio id="pop-sound-2" src="pop-sound-2.mp3" preload="auto"></audio>
+    <audio id="pop-sound-3" src="pop-sound-3.mp3" preload="auto"></audio>
+
+    <!-- Modal for image popup -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">X</button>
+            <img id="giftImage" src="" alt="">
+        </div>
+    </div>
+
+    <script>
+        let heartCount = 0; // Track the number of hearts on screen
+        const maxHearts = 20; // Set a max number of hearts to appear on screen at once
+        let score = 0; // Initialize the score
+        let slowFalling = false; // Default: hearts fall at normal speed
+        let bigHearts = false; // Default: hearts are normal size
+
+        // Function to create falling hearts
+        function createHeart() {
+            if (heartCount >= maxHearts) return; // Don't create hearts if the limit is reached
+
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.textContent = '❤️';  // Heart character
+
+            // Adjust size of the heart if bigHearts is true
+            if (bigHearts) {
+                heart.style.fontSize = '60px'; // 2x size if upgraded
+            }
+
+            const speed = slowFalling ? (Math.random() * 6 + 4) : (Math.random() * 3 + 2);
+            heart.style.animationDuration = speed + 's'; // Adjust falling speed
+
+            heart.style.left = Math.random() * window.innerWidth + 'px'; // Random horizontal position
+            document.body.appendChild(heart);
+
+            heartCount++; // Increase heart count
+
+            // Event listener for clicking on the heart
+            heart.addEventListener('click', function(event) {
+                const rect = heart.getBoundingClientRect();
+                const heartX = rect.left + window.scrollX;
+                const heartY = rect.top + window.scrollY;
+
+                heart.style.position = 'absolute';
+                heart.style.left = heartX + 'px';
+                heart.style.top = heartY + 'px';
+
+                heart.style.animation = 'pop 0.5s forwards';
+                
+                const sounds = [
+                    document.getElementById('pop-sound-1'),
+                    document.getElementById('pop-sound-2'),
+                    document.getElementById('pop-sound-3')
+                ];
+                const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+                randomSound.play(); // Play a random sound
+
+                score++;
+                document.getElementById('scoreDisplay').innerText = 'Hearts Collected: ' + score;
+
+                setTimeout(() => {
+                    heart.remove();
+                    heartCount--;
+                }, 500);
+            });
+
+            heart.addEventListener('animationend', () => {
+                heart.remove();
+                heartCount--;
+            });
+        }
+
+        // Function to create falling gifts with a 5% chance
+        function createGift() {
+            if (Math.random() > 0.05) return;
+
+            const gift = document.createElement('div');
+            gift.classList.add('gift');
+            gift.textContent = '🎁';  
+            gift.style.left = Math.random() * window.innerWidth + 'px';
+            gift.style.animationDuration = (Math.random() * 4 + 2) + 's';
+            document.body.appendChild(gift);
+
+            gift.addEventListener('click', function(event) {
+                openModal('sfr.png');
+            });
+
+            gift.addEventListener('animationend', () => {
+                gift.remove();
+            });
+        }
+
+        // Function to open the modal and display an image
+        function openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const giftImage = document.getElementById('giftImage');
+            giftImage.src = imageSrc;
+            modal.style.display = 'flex';
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+        }
+
+        // Function to go back to the main menu
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // Function to open the shop modal
+        function openShop() {
+            document.getElementById('shopModal').style.display = 'flex';
+        }
+
+        // Function to close the shop modal
+        function closeShop() {
+            document.getElementById('shopModal').style.display = 'none';
+        }
+
+        // Function to buy Slow Falling Hearts
+        function buySlowFalling() {
+            if (score >= 50) {
+                slowFalling = true;
+                score -= 50;
+                document.getElementById('scoreDisplay').innerText = 'Hearts Collected: ' + score;
+                alert("Slow falling hearts enabled!");
+            } else {
+                alert("Not enough hearts! You need 50 hearts to unlock slow falling hearts.");
+            }
+        }
+
+        // Function to buy Big Hearts
+        function buyBigHearts() {
+            if (score >= 10) {
+                bigHearts = true;
+                score -= 10;
+                document.getElementById('scoreDisplay').innerText = 'Hearts Collected: ' + score;
+                alert("Big hearts enabled!");
+            } else {
+                alert("Not enough hearts! You need 10 hearts to unlock big hearts.");
+            }
+        }
+
+        setInterval(createHeart, 500);
+        setInterval(createGift, 1000);
+    </script>
+
+</body>
+</html>
